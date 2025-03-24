@@ -76,7 +76,7 @@ Parameters:
   DeployService:
     Description: Whether to deploy the ECS service (set to false for initial infrastructure)
     Type: String
-    Default: 'true'
+    Default: 'false'
     AllowedValues:
       - 'true'
       - 'false'
@@ -380,6 +380,7 @@ Resources:
   # Application Load Balancer
   ApplicationLoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    DependsOn: InternetGatewayAttachment
     Properties:
       Name: !Sub '${EnvironmentName}-ALB'
       Subnets:
