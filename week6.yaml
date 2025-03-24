@@ -64,7 +64,6 @@ Parameters:
     Type: String
     NoEcho: true
     MinLength: 8
-    Default: '{{resolve:ssm-secure:/weeksixproject/database/password:1}}'
     
   # Add initial container image parameter
   InitialContainerImage:
@@ -526,7 +525,7 @@ Resources:
     Properties:
       Name: !Sub '${EnvironmentName}/database/credentials'
       Description: 'Secret for RDS PostgreSQL credentials'
-      SecretString: !Sub '{"username":"${DBUsername}","password":"${DBPassword}","engine":"postgres","host":"${PostgreSQLDatabase.Endpoint.Address}","port":"${PostgreSQLDatabase.Endpoint.Port}","dbname":"${DBName}"}'
+      SecretString: !Sub '{"username":"${DBUsername}","password":"{{resolve:secretsmanager:${DBPassword}}}","engine":"postgres","host":"${PostgreSQLDatabase.Endpoint.Address}","port":"${PostgreSQLDatabase.Endpoint.Port}","dbname":"${DBName}"}'
       Tags:
         - Key: Name
           Value: !Sub '${EnvironmentName}-DB-Secret'
