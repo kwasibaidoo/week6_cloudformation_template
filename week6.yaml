@@ -70,7 +70,7 @@ Parameters:
   InitialContainerImage:
     Description: Initial container image to use (should be a valid public image)
     Type: String
-    Default: 'public.ecr.aws/e2h5u6h2/image-uploader-app:latest'
+    Default: 'public.ecr.aws/o0m1t6s5/image-uploader-app:latest'
 
   # Add deployment toggle parameter
   DeployService:
