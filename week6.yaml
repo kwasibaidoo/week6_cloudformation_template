@@ -609,6 +609,8 @@ Resources:
               Value: !Ref AWS::Region
             - Name: DB_SECRET_ARN
               Value: !Ref DatabaseSecret
+            - Name: SPRING_ACTIVE_PROFILE
+              Value: prod
           Secrets:
             - Name: DB_CONNECTION_STRING
               ValueFrom: !Ref DatabaseSecret
