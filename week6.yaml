@@ -76,7 +76,7 @@ Parameters:
   DeployService:
     Description: Whether to deploy the ECS service (set to false for initial infrastructure)
     Type: String
-    Default: 'false'
+    Default: 'true'
     AllowedValues:
       - 'true'
       - 'false'
