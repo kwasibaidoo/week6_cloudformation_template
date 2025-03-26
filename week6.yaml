@@ -59,12 +59,12 @@ Parameters:
     Default: 'postgres'
     NoEcho: true
     
-  DBPassword:
-    Description: Database admin password
-    Type: String
-    NoEcho: true
-    MinLength: 8
-    Default: '{{resolve:ssm-secure:/weeksixproject/database/password:1}}'
+  # DBPassword:
+  #   Description: Database admin password
+  #   Type: String
+  #   NoEcho: true
+  #   MinLength: 8
+  #   Default: '{{resolve:ssm-secure:/weeksixproject/database/password:1}}'
     
   # Add initial container image parameter
   InitialContainerImage:
@@ -507,7 +507,7 @@ Resources:
       Engine: postgres
       EngineVersion: '17.4'
       MasterUsername: !Ref DBUsername
-      MasterUserPassword: !Ref DBPassword
+      ManageMasterUserPassword: true
       DBSubnetGroupName: !Ref DatabaseSubnetGroup
       VPCSecurityGroups:
         - !Ref DatabaseSecurityGroup
@@ -533,7 +533,7 @@ Resources:
           - - '{"username":"'
             - !Ref DBUsername
             - '","password":"'
-            - !Ref DBPassword
+            - !Select [6, !Split [':', !GetAtt PostgreSQLDatabase.MasterUserSecret.SecretArn]]
             - '","engine":"postgres","host":"'
             - !GetAtt PostgreSQLDatabase.Endpoint.Address
             - '","port":"'
