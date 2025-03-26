@@ -581,6 +581,7 @@ Resources:
                   - 'secretsmanager:GetSecretValue'
                 Resource:
                   - !Ref DatabaseSecret
+                  - !GetAtt PostgreSQLDatabase.MasterUserSecret.SecretArn
       Tags:
         - Key: Name
           Value: !Sub '${EnvironmentName}-TaskExecutionRole'
