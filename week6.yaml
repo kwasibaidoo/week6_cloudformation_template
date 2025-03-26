@@ -77,7 +77,7 @@ Parameters:
   DeployService:
     Description: Whether to deploy the ECS service (set to false for initial infrastructure)
     Type: String
-    Default: 'true'
+    Default: 'false'
     AllowedValues:
       - 'true'
       - 'false'
@@ -497,53 +497,53 @@ Resources:
           Value: !Sub '${EnvironmentName}-DB-SubnetGroup'
 
   # RDS PostgreSQL Database
-  PostgreSQLDatabase:
-    Type: AWS::RDS::DBInstance
-    DeletionPolicy: Snapshot
-    Properties:
-      DBName: !Ref DBName
-      AllocatedStorage: 20
-      DBInstanceClass: !Ref DBInstanceType
-      Engine: postgres
-      EngineVersion: '17.4'
-      MasterUsername: !Ref DBUsername
-      ManageMasterUserPassword: true
-      DBSubnetGroupName: !Ref DatabaseSubnetGroup
-      VPCSecurityGroups:
-        - !Ref DatabaseSecurityGroup
-      MultiAZ: true
-      StorageType: gp3
-      StorageEncrypted: true
-      BackupRetentionPeriod: 7
-      CopyTagsToSnapshot: true
-      PubliclyAccessible: false
-      Tags:
-        - Key: Name
-          Value: !Sub '${EnvironmentName}-PostgreSQL'
+  # PostgreSQLDatabase:
+  #   Type: AWS::RDS::DBInstance
+  #   DeletionPolicy: Snapshot
+  #   Properties:
+  #     DBName: !Ref DBName
+  #     AllocatedStorage: 20
+  #     DBInstanceClass: !Ref DBInstanceType
+  #     Engine: postgres
+  #     EngineVersion: '17.4'
+  #     MasterUsername: !Ref DBUsername
+  #     ManageMasterUserPassword: true
+  #     DBSubnetGroupName: !Ref DatabaseSubnetGroup
+  #     VPCSecurityGroups:
+  #       - !Ref DatabaseSecurityGroup
+  #     MultiAZ: true
+  #     StorageType: gp3
+  #     StorageEncrypted: true
+  #     BackupRetentionPeriod: 7
+  #     CopyTagsToSnapshot: true
+  #     PubliclyAccessible: false
+  #     Tags:
+  #       - Key: Name
+  #         Value: !Sub '${EnvironmentName}-PostgreSQL'
 
   # AWS Secrets Manager for DB Credentials
-  DatabaseSecret:
-    Type: AWS::SecretsManager::Secret
-    Properties:
-      Name: !Sub '${EnvironmentName}/database/credentials'
-      Description: 'Secret for RDS PostgreSQL credentials'
-      SecretString: 
-        Fn::Join:
-          - ''
-          - - '{"username":"'
-            - !Ref DBUsername
-            - '","password":"'
-            - !Select [6, !Split [':', !GetAtt PostgreSQLDatabase.MasterUserSecret.SecretArn]]
-            - '","engine":"postgres","host":"'
-            - !GetAtt PostgreSQLDatabase.Endpoint.Address
-            - '","port":"'
-            - !GetAtt PostgreSQLDatabase.Endpoint.Port
-            - '","dbname":"'
-            - !Ref DBName
-            - '"}'
-      Tags:
-        - Key: Name
-          Value: !Sub '${EnvironmentName}-DB-Secret'
+  # DatabaseSecret:
+  #   Type: AWS::SecretsManager::Secret
+  #   Properties:
+  #     Name: !Sub '${EnvironmentName}/database/credentials'
+  #     Description: 'Secret for RDS PostgreSQL credentials'
+  #     SecretString: 
+  #       Fn::Join:
+  #         - ''
+  #         - - '{"username":"'
+  #           - !Ref DBUsername
+  #           - '","password":"'
+  #           - !Select [6, !Split [':', !GetAtt PostgreSQLDatabase.MasterUserSecret.SecretArn]]
+  #           - '","engine":"postgres","host":"'
+  #           - !GetAtt PostgreSQLDatabase.Endpoint.Address
+  #           - '","port":"'
+  #           - !GetAtt PostgreSQLDatabase.Endpoint.Port
+  #           - '","dbname":"'
+  #           - !Ref DBName
+  #           - '"}'
+  #     Tags:
+  #       - Key: Name
+  #         Value: !Sub '${EnvironmentName}-DB-Secret'
 
   # ECS Task Execution Role
   ECSTaskExecutionRole:
@@ -624,9 +624,6 @@ Resources:
               Value: !Ref AWS::Region
             - Name: SPRING_ACTIVE_PROFILE
               Value: prod
-          Secrets:
-            - Name: DB_CONNECTION_STRING
-              ValueFrom: !Ref DatabaseSecret
           HealthCheck:
             Command:
               - CMD-SHELL
@@ -859,8 +856,8 @@ Outputs:
     Export:
       Name: !Sub '${EnvironmentName}-S3BucketName'
 
-  DatabaseSecretArn:
-    Description: ARN of the Database Credentials Secret
-    Value: !Ref DatabaseSecret
-    Export:
-      Name: !Sub '${EnvironmentName}-DatabaseSecretArn'
+  # DatabaseSecretArn:
+  #   Description: ARN of the Database Credentials Secret
+  #   Value: !Ref DatabaseSecret
+  #   Export:
+  #     Name: !Sub '${EnvironmentName}-DatabaseSecretArn'
