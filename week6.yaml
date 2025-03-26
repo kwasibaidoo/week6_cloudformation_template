@@ -579,9 +579,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - 'secretsmanager:GetSecretValue'
-                Resource:
-                  - !Ref DatabaseSecret
-                  - !GetAtt PostgreSQLDatabase.MasterUserSecret.SecretArn
+                Resource: '*'
       Tags:
         - Key: Name
           Value: !Sub '${EnvironmentName}-TaskExecutionRole'
