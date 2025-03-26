@@ -527,7 +527,20 @@ Resources:
     Properties:
       Name: !Sub '${EnvironmentName}/database/credentials'
       Description: 'Secret for RDS PostgreSQL credentials'
-      SecretString: !Sub '{"username":"${DBUsername}","password":"${DBPassword}","engine":"postgres","host":"${PostgreSQLDatabase.Endpoint.Address}","port":"${PostgreSQLDatabase.Endpoint.Port}","dbname":"${DBName}"}'
+      SecretString: 
+        Fn::Join:
+          - ''
+          - - '{"username":"'
+            - !Ref DBUsername
+            - '","password":"'
+            - !Ref DBPassword
+            - '","engine":"postgres","host":"'
+            - !GetAtt PostgreSQLDatabase.Endpoint.Address
+            - '","port":"'
+            - !GetAtt PostgreSQLDatabase.Endpoint.Port
+            - '","dbname":"'
+            - !Ref DBName
+            - '"}'
       Tags:
         - Key: Name
           Value: !Sub '${EnvironmentName}-DB-Secret'
