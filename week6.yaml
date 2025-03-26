@@ -59,12 +59,12 @@ Parameters:
     Default: 'postgres'
     NoEcho: true
     
-  # DBPassword:
-  #   Description: Database admin password
-  #   Type: String
-  #   NoEcho: true
-  #   MinLength: 8
-  #   Default: ''
+  DBPassword:
+    Description: Database admin password
+    Type: String
+    NoEcho: true
+    MinLength: 8
+    Default: '{{resolve:ssm-secure:/weeksixproject/database/password:1}}'
     
   # Add initial container image parameter
   InitialContainerImage:
@@ -72,11 +72,12 @@ Parameters:
     Type: String
     Default: 'public.ecr.aws/o0m1t6s5/image-uploader-app:latest'
 
+
   # Add deployment toggle parameter
   DeployService:
     Description: Whether to deploy the ECS service (set to false for initial infrastructure)
     Type: String
-    Default: 'true'
+    Default: 'false'
     AllowedValues:
       - 'true'
       - 'false'
@@ -506,7 +507,7 @@ Resources:
       Engine: postgres
       EngineVersion: '17.4'
       MasterUsername: !Ref DBUsername
-      ManageMasterUserPassword: true
+      MasterUserPassword: !Ref DBPassword
       DBSubnetGroupName: !Ref DatabaseSubnetGroup
       VPCSecurityGroups:
         - !Ref DatabaseSecurityGroup
@@ -523,11 +524,13 @@ Resources:
   # AWS Secrets Manager for DB Credentials
   DatabaseSecret:
     Type: AWS::SecretsManager::Secret
-    DependsOn: PostgreSQLDatabase
     Properties:
       Name: !Sub '${EnvironmentName}/database/credentials'
       Description: 'Secret for RDS PostgreSQL credentials'
-      SecretString: !Sub '{"username":"${DBUsername}","host":"${PostgreSQLDatabase.Endpoint.Address}","port":"${PostgreSQLDatabase.Endpoint.Port}","dbname":"${DBName}"}'
+      SecretString: !Sub '{"username":"${DBUsername}","password":"${DBPassword}","engine":"postgres","host":"${PostgreSQLDatabase.Endpoint.Address}","port":"${PostgreSQLDatabase.Endpoint.Port}","dbname":"${DBName}"}'
+      Tags:
+        - Key: Name
+          Value: !Sub '${EnvironmentName}-DB-Secret'
 
   # ECS Task Execution Role
   ECSTaskExecutionRole:
@@ -609,8 +612,6 @@ Resources:
               Value: !Ref AWS::Region
             - Name: DB_SECRET_ARN
               Value: !Ref DatabaseSecret
-            - Name: SPRING_ACTIVE_PROFILE
-              Value: prod
           Secrets:
             - Name: DB_CONNECTION_STRING
               ValueFrom: !Ref DatabaseSecret
