@@ -1,3 +1,16 @@
 template-file-path: week6.yaml
-parameters: {}
+parameters:
+  EnvironmentName: weeksixproject
+  PrivateSubnet2CIDR: 10.0.4.0/24
+  DBInstanceType: db.t3.small
+  InitialContainerImage: public.ecr.aws/o0m1t6s5/image-uploader-app:latest
+  DeployService: 'false'
+  DatabasePrivateSubnet1CIDR: 10.0.5.0/24
+  PrivateSubnet1CIDR: 10.0.3.0/24
+  PublicSubnet2CIDR: 10.0.2.0/24
+  VpcCIDR: 10.0.0.0/16
+  DBName: imagesdb
+  PublicSubnet1CIDR: 10.0.1.0/24
+  DatabasePrivateSubnet2CIDR: 10.0.6.0/24
+  DBUsername: '****'
 tags: {}
