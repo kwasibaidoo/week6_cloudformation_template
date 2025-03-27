@@ -665,7 +665,7 @@ Resources:
         - Type: forward
           TargetGroupArn: !Ref GreenTargetGroup
       LoadBalancerArn: !Ref ApplicationLoadBalancer
-      Port: 5001
+      Port: 5000
       Protocol: HTTP
 
   # CodeDeploy Service Role
